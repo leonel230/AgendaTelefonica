@@ -6,7 +6,7 @@
 package from;
 
 import javax.swing.table.DefaultTableModel;
-
+import database.mysql;
 /**
  *
  * @author Leonel Miranda
