@@ -5,19 +5,43 @@
  */
 package from;
 
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Leonel Miranda
  */
 public class Agenda extends javax.swing.JFrame {
-
+    DefaultTableModel model;
     /**
      * Creates new form Agenda
      */
     public Agenda() {
         initComponents();
+        Deshabilitar();
+        LlenarTabla();
+ 
     }
 
+    void Deshabilitar() {
+        txtnombre.setEnabled(false);
+        txtdireccion.setEnabled(false);
+        txttelefono.setEnabled(false);
+        txtemail.setEnabled(false);
+    }
+    void Habilitar() {
+        txtnombre.setEnabled(true);
+        txtdireccion.setEnabled(true);
+        txttelefono.setEnabled(true);
+        txtemail.setEnabled(true);
+        txtnombre.requestFocus();
+    }
+    
+    void LlenarTabla() {
+        String []titulos = {"ID","Nombre","Dirección","Teléfono","E-Mail"};
+        model= new DefaultTableModel(null,titulos);
+        tab.setModel(model);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -114,7 +138,7 @@ public class Agenda extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Title 1", "Title 2", "Title 3", "Title 4", "Title 5"
             }
         ));
         jScrollPane1.setViewportView(tab);
@@ -162,8 +186,8 @@ public class Agenda extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnnuevo)
@@ -187,6 +211,7 @@ public class Agenda extends javax.swing.JFrame {
 
     private void btnnuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnuevoActionPerformed
         // TODO add your handling code here:
+        Habilitar();
     }//GEN-LAST:event_btnnuevoActionPerformed
 
     /**
