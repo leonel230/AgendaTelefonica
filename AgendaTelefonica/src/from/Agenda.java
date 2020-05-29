@@ -6,21 +6,26 @@
 package from;
 
 import javax.swing.table.DefaultTableModel;
-import database.mysql;
+import java.sql.*;
+import db.mysql;
+import javax.swing.JOptionPane;
 /**
  *
  * @author Leonel Miranda
  */
 public class Agenda extends javax.swing.JFrame {
     DefaultTableModel model;
+    Connection conn;
+    Statement sent;
     /**
      * Creates new form Agenda
      */
     public Agenda() {
         initComponents();
+        conn = mysql.getConnect();
         Deshabilitar();
         LlenarTabla();
- 
+        
     }
 
     void Deshabilitar() {
@@ -38,9 +43,25 @@ public class Agenda extends javax.swing.JFrame {
     }
     
     void LlenarTabla() {
-        String []titulos = {"ID","Nombre","Dirección","Teléfono","E-Mail"};
-        model= new DefaultTableModel(null,titulos);
-        tab.setModel(model);
+        try{
+            String[]titulos = {"ID","Nombre","Direccion","Telefono","E-Mail"};
+            String SQL = "SELECT * FROM contactos";
+            model=new DefaultTableModel (null,titulos);
+            sent= conn.createStatement();
+            ResultSet rs= sent.executeQuery(SQL);
+            
+            String[]fila=new String[4];
+            while (rs.next()){
+                fila[0]=rs.getString("id");
+                fila[1]=rs.getString("Nombre");
+                fila[2]=rs.getString("Direccion");
+                fila[3]=rs.getString("Telefono");
+                fila[4]=rs.getString("E-Mail");
+                model.addRow(fila);        
+        }
+        tab.setModel(model); 
+    }catch(Exception e){
+}
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -67,6 +88,7 @@ public class Agenda extends javax.swing.JFrame {
         btneliminar = new javax.swing.JButton();
         btnactualizar = new javax.swing.JButton();
         btncancelar = new javax.swing.JButton();
+        label_status = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -110,7 +132,7 @@ public class Agenda extends javax.swing.JFrame {
                         .addComponent(txtdireccion)
                         .addComponent(txtemail))
                     .addComponent(txttelefono, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 541, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -151,10 +173,25 @@ public class Agenda extends javax.swing.JFrame {
         });
 
         btnguardar.setText("Guardar");
+        btnguardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnguardarActionPerformed(evt);
+            }
+        });
 
         btneliminar.setText("Eliminar");
+        btneliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btneliminarActionPerformed(evt);
+            }
+        });
 
         btnactualizar.setText("Actualizar");
+        btnactualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnactualizarActionPerformed(evt);
+            }
+        });
 
         btncancelar.setText("Cancelar");
 
@@ -165,21 +202,25 @@ public class Agenda extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(btnnuevo)
-                .addGap(36, 36, 36)
-                .addComponent(btnguardar)
-                .addGap(37, 37, 37)
-                .addComponent(btneliminar)
-                .addGap(28, 28, 28)
-                .addComponent(btnactualizar)
-                .addGap(28, 28, 28)
-                .addComponent(btncancelar)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(btnnuevo)
+                        .addGap(37, 37, 37)
+                        .addComponent(btnguardar)
+                        .addGap(38, 38, 38)
+                        .addComponent(btneliminar)
+                        .addGap(29, 29, 29)
+                        .addComponent(btnactualizar)
+                        .addGap(26, 26, 26)
+                        .addComponent(btncancelar)
+                        .addGap(75, 75, 75)
+                        .addComponent(label_status, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(32, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -188,14 +229,20 @@ public class Agenda extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnnuevo)
-                    .addComponent(btnguardar)
-                    .addComponent(btneliminar)
-                    .addComponent(btnactualizar)
-                    .addComponent(btncancelar))
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(4, 4, 4)
+                        .addComponent(label_status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnnuevo)
+                            .addComponent(btnguardar)
+                            .addComponent(btneliminar)
+                            .addComponent(btnactualizar)
+                            .addComponent(btncancelar))
+                        .addContainerGap(25, Short.MAX_VALUE))))
         );
 
         pack();
@@ -213,6 +260,35 @@ public class Agenda extends javax.swing.JFrame {
         // TODO add your handling code here:
         Habilitar();
     }//GEN-LAST:event_btnnuevoActionPerformed
+
+    private void btnguardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnguardarActionPerformed
+        // TODO add your handling code here:
+        try{
+            String SQL= "INSERT INTO contactos(nombre,direccion,telefono,email)"
+                    + " VALUES(?,?,?,?)";
+            PreparedStatement ps= conn.prepareStatement(SQL);
+            ps.setString(1, txtnombre.getText());
+            ps.setString(2, txtdireccion.getText());
+            ps.setString(3, txttelefono.getText());
+            ps.setString(4, txtemail.getText());
+            
+            int n= ps.executeUpdate();
+            if(n>0){
+                JOptionPane.showMessageDialog(null,"Datos Guardados Correctamente.");
+            }
+        } catch (SQLException e){
+            JOptionPane.showMessageDialog(null, "Error: "+e.getMessage());
+        }
+    }//GEN-LAST:event_btnguardarActionPerformed
+
+    private void btneliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneliminarActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_btneliminarActionPerformed
+
+    private void btnactualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnactualizarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -261,6 +337,7 @@ public class Agenda extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel label_status;
     private javax.swing.JTable tab;
     private javax.swing.JTextField txtdireccion;
     private javax.swing.JTextField txtemail;
